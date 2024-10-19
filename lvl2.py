@@ -16,6 +16,8 @@ thrown_darts = []
 missed_message = ""
 turns = 3
 current_turn = 0
+bg_page_2 = pygame.image.load(r'bg_page_2.JPG')
+
 
 # Wind variables
 wind_speed = random.uniform(-10, 10)  # Increase wind speed range
@@ -34,9 +36,10 @@ dart = pygame.transform.scale(dart, (50, 50))
 # Load home button image
 home_button = pygame.Surface((150, 50))  
 home_button.fill((255, 0, 0))  
-button_font = pygame.font.SysFont(None, 30)
+button_font = pygame.font.SysFont(None, 35)
 button_text = button_font.render("Home", True, (255, 255, 255))
-home_button.blit(button_text, (10, 10))
+home_button.blit(button_text, (45, 13))
+
 
 # Initialize dartboard position
 x = 200
@@ -159,7 +162,7 @@ while cap.isOpened():
     if y <= 0 or y >= 720 - board.get_height():
         direction_y *= -1
 
-    screen.fill((0, 0, 0))
+    screen.blit(bg_page_2, (0, 0))
     dart_board(x, y)
 
     for dart_data in thrown_darts:
@@ -243,6 +246,7 @@ while cap.isOpened():
     display_wind_info(wind_speed, wind_direction)
 
     if current_turn >= turns:
+        screen.blit(home_button, (1120, 10))
         screen.blit(home_button, (1120, 10))
         game_over_text = font.render("Game Over! Click Home to Exit!", True, (255, 255, 255))
         screen.blit(game_over_text, (10, 130))
