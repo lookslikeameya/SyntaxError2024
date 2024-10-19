@@ -1,13 +1,14 @@
 import pygame
 import sys
-import lvl1
+value = 1
+#import level1
 pygame.init()
 white = (255, 255, 255)
 black = (0, 0, 0)
-home_button = pygame.Surface((150, 50))  # Create a surface for the home button
-home_button.fill((255, 0, 0))  # Red color for the button
-button_font = pygame.font.SysFont(None, 30)  # Font for button text
-button_text = button_font.render("Home", True, (255, 255, 255))  # Text for the button
+#home_button = pygame.Surface((150, 50))  # Create a surface for the home button
+#home_button.fill((255, 0, 0))  # Red color for the button
+#button_font = pygame.font.SysFont(None, 30)  # Font for button text
+#button_text = button_font.render("Home", True, (255, 255, 255))  # Text for the button
 def page_2():
     # Initialize Pygame
     pygame.init()
@@ -25,14 +26,15 @@ def page_2():
     level_1 = font.render('Level 1', True, black)
     level_2 =font.render('Level 2', True, black)
     level_3 =font.render('Level 3', True, black)
-    def home():
 
+    def home():  
         home_button.blit(button_text, (10, 10))  # Center text in the button surface
     # Check for mouse clicks on the home button
-        if event.type == pygame.MOUSEBUTTONDOWN and current_turn >= turns:
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            if (1120 <= mouse_x <= 1270) and (10 <= mouse_y <= 60):
-                main()
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN and current_turn >= turns:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                if (1120 <= mouse_x <= 1270) and (10 <= mouse_y <= 60):
+                    main()
         if current_turn >= turns:
             screen.blit(home_button, (1120, 10))  # Draw home button at top right
             # Optionally display a game over message
@@ -49,10 +51,13 @@ def page_2():
                 mouse_pos = event.pos
                 if level_1_b.collidepoint(mouse_pos):
                     print("Level 1 activated")
-                    level1.level_1()
-                    #home()
+                    import lvl1
+                    if value == 0:
+                        page_2()
+                    home()
                 if level_2_b.collidepoint(mouse_pos):
                     print('Level 2 activated')
+                    import lvl2
                    # home()
                 if level_3_b.collidepoint(mouse_pos):
                     print('Level 3 activated')
@@ -127,4 +132,5 @@ def main():
         #      # Optionally display a game over message
         #      game_over_text = font.render("Game Over! Click Home to Exit!", True, (255, 255, 255))
         #      screen.blit(game_over_text, (10, 130))  # Centered in the screen
+
 main()
