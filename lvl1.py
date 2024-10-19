@@ -234,7 +234,7 @@ while cap.isOpened():
         break
 
     # Cap the frame rate
-    clock.tick(30)
+    clock.tick(120)
 
 # Release resources
 cap.release()
