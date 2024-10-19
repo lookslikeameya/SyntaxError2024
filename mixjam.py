@@ -10,8 +10,8 @@ dart_held = False  # True when dart is held by fingers
 dart_released = False  # True when dart is released and stuck to board
 score = 0  # Initialize the score
 
-# Set up display
-screen = pygame.display.set_mode((800, 600))
+# Set up display for 1280x720 resolution
+screen = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption('Dart Game')
 
 # Load dartboard and dart images
@@ -30,7 +30,7 @@ dart_offset_y = 0
 # Set random direction for the board
 direction_x = random.choice([-1, 1])
 direction_y = random.choice([-1, 1])
-speed = 3  # Speed of movement
+speed = 5  # Speed of movement
 
 # Font for displaying score
 font = pygame.font.SysFont(None, 36)
@@ -53,7 +53,7 @@ def calculate_score(dart_x, dart_y, board_x, board_y):
     # Calculate distance from dart to center of the board
     distance = calculate_distance(dart_x, dart_y, board_center_x, board_center_y)
 
-    # Define score zones based on distance (adjust these thresholds as needed)
+    # Define score zones based on distance
     if distance < 20:
         return 100  # Bullseye
     elif distance < 50:
@@ -102,9 +102,9 @@ while cap.isOpened():
     y += direction_y * speed
 
     # Check for boundary collisions and reverse direction if it hits the screen edges
-    if x <= 0 or x >= 800 - board.get_width():
+    if x <= 0 or x >= 1280 - board.get_width():
         direction_x *= -1
-    if y <= 0 or y >= 600 - board.get_height():
+    if y <= 0 or y >= 720 - board.get_height():
         direction_y *= -1
 
     # Fill the screen with a color
@@ -119,8 +119,8 @@ while cap.isOpened():
             landmarks = []
 
             for lm in hand_landmarks.landmark:
-                lm_x = int(lm.x * 800)
-                lm_y = int(lm.y * 600)
+                lm_x = int(lm.x * 1280)
+                lm_y = int(lm.y * 720)
                 landmarks.append((lm_x, lm_y))
 
             # Draw the hand skeleton in Pygame
@@ -134,9 +134,9 @@ while cap.isOpened():
             thumb_tip = hand_landmarks.landmark[4]
             index_tip = hand_landmarks.landmark[8]
 
-            # Get pixel coordinates for both points
-            thumb_x, thumb_y = int(thumb_tip.x * width), int(thumb_tip.y * height)
-            index_x, index_y = int(index_tip.x * width), int(index_tip.y * height)
+            # Scale the coordinates from the camera to the Pygame screen size (1280x720)
+            thumb_x, thumb_y = int(thumb_tip.x * 1280), int(thumb_tip.y * 720)
+            index_x, index_y = int(index_tip.x * 1280), int(index_tip.y * 720)
 
             # Calculate the distance between thumb tip and index tip
             distance = calculate_distance(thumb_x, thumb_y, index_x, index_y)
@@ -165,12 +165,8 @@ while cap.isOpened():
 
     # If dart is being held, follow the index finger
     if index_x is not None and dart_held:
-        # Convert index finger coordinates to match Pygame's resolution
-        pygame_index_x = int(index_x * (800 / width))
-        pygame_index_y = int(index_y * (600 / height))
-
         # Display the dart at the index finger's position
-        screen.blit(dart, (pygame_index_x - dart.get_width() // 2, pygame_index_y - dart.get_height() // 2))
+        screen.blit(dart, (index_x - dart.get_width() // 2, index_y - dart.get_height() // 2))
 
     # After dart is released, make it stick to the dartboard and move with it
     if dart_released:
@@ -185,7 +181,7 @@ while cap.isOpened():
     pygame.display.flip()
 
     # Show the output frame in OpenCV
-   
+    
 
     # Break loop with 'q' key
     if cv2.waitKey(1) & 0xFF == ord('q'):
