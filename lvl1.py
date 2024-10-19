@@ -132,59 +132,61 @@ while cap.isOpened():
 
     # If hands are detected and dart hasn't been released
     if results and not dart_released:
-        for hand_landmarks in results.multi_hand_landmarks:
-            # Get pixel coordinates for all landmarks
-            height, width, _ = frame.shape
-            landmarks = []
+        # Process the frame to detect hands
+        if results and results.multi_hand_landmarks:  # Check if hands are detected and landmarks are present
+            for hand_landmarks in results.multi_hand_landmarks:
+                # Get pixel coordinates for all landmarks
+                height, width, _ = frame.shape
+                landmarks = []
 
-            for lm in hand_landmarks.landmark:
-                lm_x = int(lm.x * 1280)
-                lm_y = int(lm.y * 720)
-                landmarks.append((lm_x, lm_y))
+                for lm in hand_landmarks.landmark:
+                    lm_x = int(lm.x * 1280)
+                    lm_y = int(lm.y * 720)
+                    landmarks.append((lm_x, lm_y))
 
-            # Draw the hand skeleton in Pygame
-            for connection in mp_hands.HAND_CONNECTIONS:
-                start_idx, end_idx = connection
-                start_pos = landmarks[start_idx]
-                end_pos = landmarks[end_idx]
-                pygame.draw.line(screen, (0, 255, 0), start_pos, end_pos, 2)
+                # Draw the hand skeleton in Pygame
+                for connection in mp_hands.HAND_CONNECTIONS:
+                    start_idx, end_idx = connection
+                    start_pos = landmarks[start_idx]
+                    end_pos = landmarks[end_idx]
+                    pygame.draw.line(screen, (0, 255, 0), start_pos, end_pos, 2)
 
-            # Get coordinates of the thumb tip (landmark 4) and index finger tip (landmark 8)
-            thumb_tip = hand_landmarks.landmark[4]
-            index_tip = hand_landmarks.landmark[8]
+                # Get coordinates of the thumb tip (landmark 4) and index finger tip (landmark 8)
+                thumb_tip = hand_landmarks.landmark[4]
+                index_tip = hand_landmarks.landmark[8]
 
-            # Scale the coordinates from the camera to the Pygame screen size (1280x720)
-            thumb_x, thumb_y = int(thumb_tip.x * 1280), int(thumb_tip.y * 720)
-            index_x, index_y = int(index_tip.x * 1280), int(index_tip.y * 720)
+                # Scale the coordinates from the camera to the Pygame screen size (1280x720)
+                thumb_x, thumb_y = int(thumb_tip.x * 1280), int(thumb_tip.y * 720)
+                index_x, index_y = int(index_tip.x * 1280), int(index_tip.y * 720)
 
-            # Calculate the distance between thumb tip and index tip
-            distance = calculate_distance(thumb_x, thumb_y, index_x, index_y)
+                # Calculate the distance between thumb tip and index tip
+                distance = calculate_distance(thumb_x, thumb_y, index_x, index_y)
 
-            # Define a threshold for when the fingers are considered "touching"
-            touching_threshold = 30
+                # Define a threshold for when the fingers are considered "touching"
+                touching_threshold = 30
 
-            # Check if fingers are touching (hold dart when fingers touch)
-            if distance < touching_threshold and not dart_released:
-                dart_held = True
-            else:
-                if dart_held:  # If dart was being held and fingers separate, release it
-                    dart_released = True
-                    dart_held = False
-                    # Dart is released, calculate its offset from the dartboard position
-                    dart_offset_x = index_x - x
-                    dart_offset_y = index_y - y
+                # Check if fingers are touching (hold dart when fingers touch)
+                if distance < touching_threshold and not dart_released:
+                    dart_held = True
+                else:
+                    if dart_held:  # If dart was being held and fingers separate, release it
+                        dart_released = True
+                        dart_held = False
+                        # Dart is released, calculate its offset from the dartboard position
+                        dart_offset_x = index_x - x
+                        dart_offset_y = index_y - y
 
-                    # Check if the dart hit the dartboard area
-                    if (x <= index_x <= x + board.get_width()) and (y <= index_y <= y + board.get_height()):
-                        # Dart hit the board, add it to the thrown darts list and calculate the score
-                        thrown_darts.append((index_x - x, index_y - y))  # Store dart position relative to board
-                        score += calculate_score(index_x, index_y, x, y)
-                        missed_message = ""  # Clear any missed message
-                    else:
-                        # Dart missed the board
-                        missed_message = "Missed the board!"
+                        # Check if the dart hit the dartboard area
+                        if (x <= index_x <= x + board.get_width()) and (y <= index_y <= y + board.get_height()):
+                            # Dart hit the board, add it to the thrown darts list and calculate the score
+                            thrown_darts.append((index_x - x, index_y - y))  # Store dart position relative to board
+                            score += calculate_score(index_x, index_y, x, y)
+                            missed_message = ""  # Clear any missed message
+                        else:
+                            # Dart missed the board
+                            missed_message = "Missed the board!"
 
-    # Pygame event handling
+            # Pygame event handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
