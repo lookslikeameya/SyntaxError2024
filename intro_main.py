@@ -1,6 +1,6 @@
 import pygame
 import sys
-import level1
+import lvl1
 pygame.init()
 white = (255, 255, 255)
 black = (0, 0, 0)
