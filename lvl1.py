@@ -7,6 +7,7 @@ import sys
 import threading
 import time
 
+
 # Initialize Pygame and OpenCV
 pygame.init()
 dart_held = False
@@ -14,8 +15,9 @@ dart_released = False
 score = 0
 thrown_darts = []
 missed_message = ""
-turns = 5
+turns = 3
 current_turn = 0
+bg_page_2 = pygame.image.load(r'bg_page_2.JPG')
 
 # Set up display for 1280x720 resolution with hardware acceleration
 screen = pygame.display.set_mode((1280, 720), pygame.HWSURFACE | pygame.DOUBLEBUF)
@@ -29,9 +31,9 @@ dart = pygame.transform.scale(dart, (50, 50))
 # Load home button image
 home_button = pygame.Surface((150, 50))  
 home_button.fill((255, 0, 0))  
-button_font = pygame.font.SysFont(None, 30)
+button_font = pygame.font.SysFont(None, 35)
 button_text = button_font.render("Home", True, (255, 255, 255))
-home_button.blit(button_text, (10, 10))
+home_button.blit(button_text, (45, 13))
 
 # Initialize dartboard position
 x = 200
@@ -156,7 +158,7 @@ while cap.isOpened():
     if y <= 0 or y >= 720 - board.get_height():
         direction_y *= -1
 
-    screen.fill((0, 0, 0))
+    screen.blit(bg_page_2, (0, 0))
     dart_board(x, y)
 
     for dart_data in thrown_darts:
@@ -241,6 +243,7 @@ while cap.isOpened():
 
     if current_turn >= turns:
         screen.blit(home_button, (1120, 10))
+        font = pygame.font.SysFont(None, 40) 
         game_over_text = font.render("Game Over! Click Home to Exit!", True, (255, 255, 255))
         screen.blit(game_over_text, (10, 130))
 
@@ -253,3 +256,4 @@ while cap.isOpened():
 
 cap.release()
 cv2.destroyAllWindows()
+
