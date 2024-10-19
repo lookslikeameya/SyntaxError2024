@@ -2,22 +2,6 @@ import cv2
 import mediapipe as mp
 import math
 
-import pygame
-pygame.init()
-hold = 1
-# Set up display
-screen = pygame.display.set_mode((800, 600))
-
-# Set up the clock
-clock = pygame.time.Clock()
-pygame.display.set_caption('Dart Game')
-board = pygame.image.load(r'board.JPG')
-x = 200
-y = 100
-def dart_board(x, y):
-    screen.blit(board, (x, y))
-
-
 # Initialize Mediapipe Hands
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(static_image_mode=False, max_num_hands=2, min_detection_confidence=0.5)
@@ -60,39 +44,21 @@ while cap.isOpened():
             thumb_x, thumb_y = int(thumb_tip.x * width), int(thumb_tip.y * height)
             index_x, index_y = int(index_tip.x * width), int(index_tip.y * height)
 
+            # Draw circles at the thumb and index tip
+            cv2.circle(frame, (thumb_x, thumb_y), 10, (0, 255, 0), cv2.FILLED)
+            cv2.circle(frame, (index_x, index_y), 10, (0, 255, 0), cv2.FILLED)
+
             # Calculate the distance between thumb tip and index tip
             distance = calculate_distance(thumb_x, thumb_y, index_x, index_y)
 
             # Define a threshold for when the fingers are considered "touching"
-            touching_threshold = 30  # Adjust this value depending on your camera's resolution
-
-            # Output the coordinates of the thumb and index finger
-            print(f'Thumb: ({thumb_x}, {thumb_y}), Index: ({index_x}, {index_y})')
-
-            # Check if fingers are connected
-            if distance < touching_threshold:
-                hold=0
-                
+            if distance < 30:  # Adjust this value depending on your camera's resolution
+                cv2.putText(frame, "Fingers touching!", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             else:
-                hold=1
+                cv2.putText(frame, "Fingers apart", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+
     # Show the output frame
     cv2.imshow("Hand Detection", frame)
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-        if  hold == 0:
-            
-            pygame.draw.rect(screen, (255, 0, 0), (index_x, index_y, 50, 50))
-
-            # Get the color of the pixel at position (110, 110)
-            #pixel_color = screen.get_at(110, 110)
-
-    # Fill the screen with a color
-    screen.fill((0, 0, 0))
-    dart_board(x, y)
-    # Update the display
-    pygame.display.flip()    
 
     # Break loop with 'q' key
     if cv2.waitKey(1) & 0xFF == ord('q'):

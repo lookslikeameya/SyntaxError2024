@@ -1,22 +1,26 @@
 import cv2
 import mediapipe as mp
 import math
-
 import pygame
+
+# Initialize Pygame and OpenCV
 pygame.init()
 hold = 1
+
 # Set up display
 screen = pygame.display.set_mode((800, 600))
-
-# Set up the clock
-clock = pygame.time.Clock()
 pygame.display.set_caption('Dart Game')
+
+# Load dartboard image
 board = pygame.image.load(r'board.JPG')
 x = 200
 y = 100
+
 def dart_board(x, y):
     screen.blit(board, (x, y))
 
+# Set up the clock
+clock = pygame.time.Clock()
 
 # Initialize Mediapipe Hands
 mp_hands = mp.solutions.hands
@@ -71,32 +75,41 @@ while cap.isOpened():
 
             # Check if fingers are connected
             if distance < touching_threshold:
-                hold=0
-                
+                hold = 0
             else:
-                hold=1
-    # Show the output frame
-    cv2.imshow("Hand Detection", frame)
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-        if  hold == 0:
-            
-            pygame.draw.rect(screen, (255, 0, 0), (index_x, index_y, 50, 50))
-
-            # Get the color of the pixel at position (110, 110)
-            #pixel_color = screen.get_at(110, 110)
+                hold = 1
 
     # Fill the screen with a color
     screen.fill((0, 0, 0))
     dart_board(x, y)
+
+    # Pygame event handling
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+
+    # If the hand gesture indicates "holding", draw a red rectangle
+    if hold == 0:
+        # Convert index finger coordinates to match Pygame's resolution
+        # Assume the webcam feed resolution might not match the Pygame window
+        pygame_index_x = int(index_x * (800 / width))
+        pygame_index_y = int(index_y * (600 / height))
+        
+        pygame.draw.circle(screen, (255, 0, 0), (pygame_index_x, pygame_index_y), 20)
+
     # Update the display
-    pygame.display.flip()    
+    pygame.display.flip()
+
+    # Show the output frame in OpenCV
+    cv2.imshow("Hand Detection", frame)
 
     # Break loop with 'q' key
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
+    # Cap the frame rate
+    clock.tick(30)
+
+# Release resources
 cap.release()
 cv2.destroyAllWindows()
