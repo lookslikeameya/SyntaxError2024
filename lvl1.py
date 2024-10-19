@@ -14,7 +14,7 @@ dart_released = False
 score = 0
 thrown_darts = []
 missed_message = ""
-turns = 3
+turns = 5
 current_turn = 0
 
 # Set up display for 1280x720 resolution with hardware acceleration
