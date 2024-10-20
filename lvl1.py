@@ -32,7 +32,7 @@ dart = pygame.transform.scale(dart, (50, 50))
 home_button = pygame.Surface((150, 50))  
 home_button.fill((255, 0, 0))  
 button_font = pygame.font.SysFont(None, 35)
-button_text = button_font.render("Home", True, (255, 255, 255))
+button_text = button_font.render("EXIT", True, (255, 255, 255))
 home_button.blit(button_text, (45, 13))
 
 # Initialize dartboard position
@@ -244,7 +244,7 @@ while cap.isOpened():
     if current_turn >= turns:
         screen.blit(home_button, (1120, 10))
         font = pygame.font.SysFont(None, 40) 
-        game_over_text = font.render("Game Over! Click Home to Exit!", True, (255, 255, 255))
+        game_over_text = font.render("Game Over! Click EXIT to Exit!", True, (255, 255, 255))
         screen.blit(game_over_text, (10, 130))
 
     if missed_message:
@@ -256,4 +256,3 @@ while cap.isOpened():
 
 cap.release()
 cv2.destroyAllWindows()
-
